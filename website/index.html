@@ -46,25 +46,21 @@
         <label for="message">Message:</label>
         <textarea id="message" rows="4" required></textarea>
     </div>
-    <div class="form-group">
-        <label for="token">Device Token:</label>
-        <input type="text" id="token" required>
-    </div>
     <button onclick="sendNotification()">Send Notification</button>
 
     <script>
+        const DEVICE_TOKEN = 'dVfZN7OjRNGdwQm-V56A4Y:APA91bGBmuUt3VyusLn21Ln2SCgU97Cmr7sXe5UaszQpTYKFSB54_Pbvkn2HcMd7x2vTZFYsVRBmzAvKExe9-n2BFmGozkoo4esy3_b1NOnUXk3IpjHhMnU';
+        
         async function sendNotification() {
             const title = document.getElementById('title').value;
             const message = document.getElementById('message').value;
-            const token = document.getElementById('token').value;
 
-            if (!title || !message || !token) {
+            if (!title || !message) {
                 alert('Please fill all fields');
                 return;
             }
 
-            // Replace with your Firebase Cloud Function URL
-            const url = 'YOUR_FIREBASE_CLOUD_FUNCTION_URL';
+            const url = 'https://us-central1-notification-practice-99bd4.cloudfunctions.net/sendNotification';
 
             try {
                 const response = await fetch(url, {
@@ -73,7 +69,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        token: token,
+                        token: DEVICE_TOKEN,
                         notification: {
                             title: title,
                             body: message
@@ -83,6 +79,9 @@
 
                 if (response.ok) {
                     alert('Notification sent successfully!');
+                    // Clear the form
+                    document.getElementById('title').value = '';
+                    document.getElementById('message').value = '';
                 } else {
                     alert('Failed to send notification');
                 }
