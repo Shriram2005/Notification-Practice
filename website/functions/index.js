@@ -14,19 +14,19 @@ exports.sendNotification = functions.https.onRequest(async (req, res) => {
         return;
     }
 
-    const { token, notification } = req.body;
+    const { notification } = req.body;
     
-    if (!token || !notification) {
-        res.status(400).send('Missing required parameters');
+    if (!notification) {
+        res.status(400).send('Missing notification data');
         return;
     }
 
     try {
         await admin.messaging().send({
-            token: token,
+            topic: 'all_users',
             notification: notification
         });
-        res.status(200).send('Notification sent successfully');
+        res.status(200).send('Notification sent successfully to all users');
     } catch (error) {
         console.error('Error sending notification:', error);
         res.status(500).send('Error sending notification: ' + error.message);

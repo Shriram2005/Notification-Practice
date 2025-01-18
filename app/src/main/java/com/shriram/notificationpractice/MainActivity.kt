@@ -43,6 +43,16 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        // Subscribe to notifications topic
+        FirebaseMessaging.getInstance().subscribeToTopic("all_users")
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this, "Subscribed to notifications", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Failed to subscribe to notifications", Toast.LENGTH_SHORT).show()
+                }
+            }
+
         setContent {
             NotificationPracticeTheme {
                 var fcmToken by remember { mutableStateOf("Loading token...") }

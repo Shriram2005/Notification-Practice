@@ -1,57 +1,182 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Send FCM Notification</title>
     <style>
+        :root {
+            --primary-color: #4CAF50;
+            --primary-hover: #45a049;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+            --spacing: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: var(--spacing);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
             max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+            background-color: var(--card-background);
+            padding: calc(var(--spacing) * 2);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin: var(--spacing) auto;
         }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: calc(var(--spacing) * 2);
+            text-align: center;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+        }
+
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: calc(var(--spacing) * 1.5);
         }
+
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: calc(var(--spacing) * 0.5);
+            font-weight: 500;
+            color: var(--text-color);
         }
-        input[type="text"], textarea {
+
+        input[type="text"],
+        textarea {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: calc(var(--spacing) * 0.75);
+            border: 2px solid var(--border-color);
+            border-radius: calc(var(--border-radius) * 0.5);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background-color: var(--card-background);
         }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
         button {
-            background-color: #4CAF50;
+            background-color: var(--primary-color);
             color: white;
-            padding: 10px 20px;
+            padding: calc(var(--spacing) * 0.75) calc(var(--spacing) * 1.5);
             border: none;
-            border-radius: 4px;
+            border-radius: calc(var(--border-radius) * 0.5);
             cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
+
         button:hover {
-            background-color: #45a049;
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Loading state */
+        button.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Success message */
+        .success-message {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: var(--spacing);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing);
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            body {
+                padding: 0;
+            }
+
+            input[type="text"],
+            textarea,
+            button {
+                font-size: 16px; /* Prevent zoom on mobile */
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #1a1a1a;
+                --card-background: #2d2d2d;
+                --text-color: #ffffff;
+                --border-color: #404040;
+                --shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
         }
     </style>
 </head>
 <body>
-    <h2>Send FCM Notification</h2>
-    <div class="form-group">
-        <label for="title">Notification Title:</label>
-        <input type="text" id="title" required>
+    <div class="container">
+        <h2>Send FCM Notification to All Users</h2>
+        <form id="notificationForm" onsubmit="sendNotification(event)">
+            <div class="form-group">
+                <label for="title">Notification Title:</label>
+                <input type="text" id="title" required placeholder="Enter notification title">
+            </div>
+            <div class="form-group">
+                <label for="message">Message:</label>
+                <textarea id="message" rows="4" required placeholder="Enter notification message"></textarea>
+            </div>
+            <button type="submit" id="sendButton">Send Notification to All Users</button>
+            <div id="successMessage" class="success-message">Notification sent successfully!</div>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="message">Message:</label>
-        <textarea id="message" rows="4" required></textarea>
-    </div>
-    <button onclick="sendNotification()">Send Notification</button>
 
     <script>
-        const DEVICE_TOKEN = 'dVfZN7OjRNGdwQm-V56A4Y:APA91bGBmuUt3VyusLn21Ln2SCgU97Cmr7sXe5UaszQpTYKFSB54_Pbvkn2HcMd7x2vTZFYsVRBmzAvKExe9-n2BFmGozkoo4esy3_b1NOnUXk3IpjHhMnU';
-        
-        async function sendNotification() {
+        async function sendNotification(event) {
+            event.preventDefault();
+            const button = document.getElementById('sendButton');
+            const successMessage = document.getElementById('successMessage');
+            const form = document.getElementById('notificationForm');
+            
             const title = document.getElementById('title').value;
             const message = document.getElementById('message').value;
 
@@ -59,6 +184,11 @@
                 alert('Please fill all fields');
                 return;
             }
+
+            // Disable button and show loading state
+            button.disabled = true;
+            button.classList.add('loading');
+            button.textContent = 'Sending...';
 
             const url = 'https://us-central1-notification-practice-99bd4.cloudfunctions.net/sendNotification';
 
@@ -69,7 +199,6 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        token: DEVICE_TOKEN,
                         notification: {
                             title: title,
                             body: message
@@ -78,16 +207,25 @@
                 });
 
                 if (response.ok) {
-                    alert('Notification sent successfully!');
-                    // Clear the form
-                    document.getElementById('title').value = '';
-                    document.getElementById('message').value = '';
+                    // Show success message
+                    successMessage.classList.add('show');
+                    form.reset();
+                    
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        successMessage.classList.remove('show');
+                    }, 3000);
                 } else {
-                    alert('Failed to send notification');
+                    throw new Error('Failed to send notification');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error sending notification');
+                alert('Error sending notification: ' + error.message);
+            } finally {
+                // Reset button state
+                button.disabled = false;
+                button.classList.remove('loading');
+                button.textContent = 'Send Notification to All Users';
             }
         }
     </script>
