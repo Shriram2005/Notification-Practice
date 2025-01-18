@@ -71,13 +71,20 @@
             border-radius: calc(var(--border-radius) * 0.5);
             font-size: 1rem;
             transition: border-color 0.3s ease;
-            background-color: var(--card-background);
+            background-color: #2d2d2d;
+            color: white;
+        }
+
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
         }
 
         input[type="text"]:focus,
         textarea:focus {
             outline: none;
             border-color: var(--primary-color);
+            background-color: #363636;
         }
 
         button {
