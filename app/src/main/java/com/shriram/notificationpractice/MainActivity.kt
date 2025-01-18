@@ -9,12 +9,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessaging
@@ -55,18 +56,26 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             NotificationPracticeTheme {
-                var fcmToken by remember { mutableStateOf("Loading token...") }
-                val clipboardManager = LocalClipboardManager.current
+                var notificationStatus by remember { mutableStateOf("Checking notification status...") }
+                var isSubscribed by remember { mutableStateOf(false) }
 
-                // Get FCM token
+                // Check notification status
                 LaunchedEffect(Unit) {
-                    FirebaseMessaging.getInstance().token
-                        .addOnSuccessListener { token ->
-                            fcmToken = token
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        val isGranted = ContextCompat.checkSelfPermission(
+                            applicationContext,
+                            Manifest.permission.POST_NOTIFICATIONS
+                        ) == PackageManager.PERMISSION_GRANTED
+                        notificationStatus = if (isGranted) {
+                            isSubscribed = true
+                            "Notifications enabled"
+                        } else {
+                            "Notifications disabled"
                         }
-                        .addOnFailureListener { e ->
-                            fcmToken = "Error: ${e.message}"
-                        }
+                    } else {
+                        isSubscribed = true
+                        notificationStatus = "Notifications enabled"
+                    }
                 }
 
                 Surface(
@@ -76,28 +85,62 @@ class MainActivity : ComponentActivity() {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp),
+                            .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
+
                         Text(
-                            text = "Your FCM Token:",
-                            style = MaterialTheme.typography.titleMedium
+                            text = "This app demonstrates push notifications using Firebase Cloud Messaging",
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = fcmToken,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(
-                            onClick = {
-                                clipboardManager.setText(AnnotatedString(fcmToken))
-                                Toast.makeText(applicationContext, "Token copied to clipboard!", Toast.LENGTH_SHORT).show()
-                            }
+                        
+                        Spacer(modifier = Modifier.height(64.dp))
+                        
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSubscribed) 
+                                    MaterialTheme.colorScheme.primaryContainer 
+                                else 
+                                    MaterialTheme.colorScheme.errorContainer
+                            )
                         ) {
-                            Text("Copy Token")
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = notificationStatus,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = if (isSubscribed) 
+                                        MaterialTheme.colorScheme.onPrimaryContainer 
+                                    else 
+                                        MaterialTheme.colorScheme.onErrorContainer
+                                )
+                                
+                                if (!isSubscribed) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Button(
+                                        onClick = {
+                                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        }
+                                    ) {
+                                        Text("Enable Notifications")
+                                    }
+                                }
+                            }
                         }
+                        
+                        Spacer(modifier = Modifier.height(64.dp))
+                        
+                        Text(
+                            text = "You'll receive notifications when they are sent from the admin panel",
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
