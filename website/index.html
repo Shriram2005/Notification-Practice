@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send FCM Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h2>Send FCM Notification</h2>
+    <div class="form-group">
+        <label for="title">Notification Title:</label>
+        <input type="text" id="title" required>
+    </div>
+    <div class="form-group">
+        <label for="message">Message:</label>
+        <textarea id="message" rows="4" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="token">Device Token:</label>
+        <input type="text" id="token" required>
+    </div>
+    <button onclick="sendNotification()">Send Notification</button>
+
+    <script>
+        async function sendNotification() {
+            const title = document.getElementById('title').value;
+            const message = document.getElementById('message').value;
+            const token = document.getElementById('token').value;
+
+            if (!title || !message || !token) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            // Replace with your Firebase Cloud Function URL
+            const url = 'YOUR_FIREBASE_CLOUD_FUNCTION_URL';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        notification: {
+                            title: title,
+                            body: message
+                        }
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Notification sent successfully!');
+                } else {
+                    alert('Failed to send notification');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error sending notification');
+            }
+        }
+    </script>
+</body>
+</html>

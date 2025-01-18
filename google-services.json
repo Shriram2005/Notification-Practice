@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "61333355726",
+    "project_id": "notification-practice-b661a",
+    "storage_bucket": "notification-practice-b661a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:61333355726:android:559036f8a6e3f3eba9a49f",
+        "android_client_info": {
+          "package_name": "com.shriram.notificationpractice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXAFRKS1TdBpVweVQxuHUFSzep4SffCi8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
