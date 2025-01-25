@@ -12,6 +12,7 @@ A modern Android application demonstrating Firebase Cloud Messaging (FCM) integr
   - Automatic topic subscription for all users
 
 - **Web Dashboard**
+  **https://notification-practice.netlify.app**
   - Clean, responsive web interface
   - Send notifications to all subscribed devices
   - Real-time notification delivery
@@ -32,7 +33,12 @@ A modern Android application demonstrating Firebase Cloud Messaging (FCM) integr
 
 ## 📱 Screenshots
 
-[Add your app screenshots here]
+
+
+<img src="https://github.com/user-attachments/assets/6534fd98-14c2-43cc-a827-53f46a616f17" alt="Screenshot"  height="400" />
+
+<img src="https://github.com/user-attachments/assets/d7166868-2682-4f6f-8525-256b4f3743f6" alt="Image"  height="400" />
+
 
 ## 🚦 Getting Started
 
